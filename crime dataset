@@ -1,0 +1,79 @@
+crime<- read.csv("C:/Users/HARSHAL PATIL/Downloads/crime_data.csv")
+View(crime)
+
+#normalising data
+norm<- scale(crime[2:5])
+d<- dist(norm,method = "euclidean")
+View(norm)
+
+
+#### hierachical method ####
+### complete linkage##
+
+
+model<- hclust(d,method = "complete")
+plot(model,hang = -1) ### hang use to make in one line ###
+rect.hclust(model,k=4)
+group<- cutree(model,k=4)
+cases<- as.matrix(group)
+final<- data.frame(crime,cases)
+
+View(final)
+aggregate(crime[,c(-1,-6)],by=list(final$cases),mean) ###averg##
+
+
+
+###single linkage method##
+
+model2<-hclust(d,method = "single")
+plot(model2,hang = -1)
+rect.hclust(model2,k=2)
+group2<-cutree(model2,k=2)
+cases2<-as.matrix(group2)
+final2<- data.frame(crime,cases2)
+
+View(final2)
+aggregate(crime[,c(-1,-6)],by=list(final2$cases2),mean)
+
+
+###Average linkage method ###
+
+model3<-hclust(d,method = "average")
+plot(model3,hang = -1)
+rect.hclust(model3,k=5)
+group3<-cutree(model3,k=5)
+cases3<-as.matrix(group3)
+final3<- data.frame(crime,cases3)
+
+View(final3)
+aggregate(crime[,c(-1,-6)],by=list(final3$cases3),mean)
+
+
+#### centroid linkage method ###
+
+model4<-hclust(d,method = "centroid")
+plot(model4,hang = -1)
+rect.hclust(model4,k=4)
+group4<-cutree(model4,k=4)
+cases4<-as.matrix(group4)
+final4<- data.frame(crime,cases4)
+
+View(final3)
+aggregate(crime[,c(-1,-6)],by=list(final3$cases3),mean)
+
+
+### k-Means ###
+
+wss<-c()
+for(i in 2:15) wss[i]<-sum(kmeans(norm,centers =i)$withinss)
+plot(1:15,wss,type = "b",xlab = "No. of clusters",ylab="Sum of Squares")### for plot##-
+crime_kmeans<- kmeans(norm,4)  ### k = 4 from elbow graph
+crime_kmeans
+
+crime_kmeans$centers
+final_3<- data.frame(crime,crime_kmeans$cluster)
+View(final_3)
+aggregate(crime[,2:12],by = list(crime_kmeans$cluster),mean)
+
+
+
