@@ -1,0 +1,60 @@
+library(readxl)
+ 
+airlines<- read.csv("C:/Users/HARSHAL PATIL/Downloads/EastWestAirlines.csv")
+
+normalize<- scale(airlines[,2:12])
+d<- dist(normalize,method = "euclidean")
+                   
+###Hirarchical Method ###
+
+##By Ward.D2 Method With K=3 ##
+model<- hclust(d,method = "ward.D2")
+plot(model,hang = -1)
+rect.hclust(model,k = 3,border = "red")
+groups<- cutree(model,k=3)
+table(groups)
+claster<- as.matrix(groups)
+final<- data.frame(airlines,claster)
+View(final)
+                   
+##By Ward.D2 Method With K=4 ##
+model1<- hclust(d,method = "ward.D2")
+plot(model1,hang = -1)
+rect.hclust(model1,k = 4,border = "red")
+groups1<- cutree(model1,k=4)
+table(groups1)
+claster1<- as.matrix(groups1)
+final1<- data.frame(airlines,claster1)
+View(final1)
+
+## By Average Method With K = 2 ##
+model2<- hclust(d, method = "average")
+plot(model2,hang = -1)
+rect.hclust(model2,k=2,border = "blue")
+groups_2<- cutree(model2,k = 2)
+table(groups_2)
+claster2<- as.matrix(groups_2)
+final_2<- data.frame(airlines,claster2)
+View(final_2)
+aggregate(airlines[,c(-1,-13)],by=list(final_2$claster2),mean)
+
+###k-means###
+install.packages("plyr")
+install.packages("animation")
+library(plyr)
+library(animation)
+
+
+wss<-c()
+for(i in 2:10) wss[i]<-sum(kmeans(normalize,centers =i)$withinss)
+plot(1:10,wss,type = "b",xlab = "No. of clusters",ylab="Sum of Squares")
+
+airlines_kmeans<- kmeans(normalize,3)  ### k = 4
+airlines_kmeans
+
+
+
+
+
+
+
